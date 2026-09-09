@@ -1,10 +1,37 @@
-Pruebas ejecutadas con: uv run python server.py
 
-PASS GET lista vacia [200] []
-PASS POST crea tarea [201] {"id": 1, "title": "Estudiar HTTP", "done": false}
-PASS GET obtiene tarea [200] {"id": 1, "title": "Estudiar HTTP", "done": false}
-PASS PATCH conserva title y cambia done [200] {"id": 1, "title": "Estudiar HTTP", "done": true}
-PASS DELETE elimina tarea [200] {"deleted": true, "task": {"id": 1, "title": "Estudiar HTTP", "done": true}}
-PASS GET tarea eliminada [404]
+== 1. GET /tasks (empty list at startup) ==
+  PASS  GET /tasks returns 200  ->  200
 
-Resumen: 6 PASS, 0 FAIL
+== 2. POST /tasks creates a task and assigns an id ==
+  PASS  POST /tasks returns 201  ->  201
+  PASS  the body returns the created task
+  PASS  the body includes an id
+
+== 3. A second POST creates another task with another id (POST is not idempotent) ==
+  PASS  POST /tasks returns 201  ->  201
+  PASS  each POST produces a different id  (9 and 10)
+
+== 4. GET /tasks returns the created tasks ==
+  PASS  GET /tasks returns 200  ->  200
+
+== 5. GET /tasks/9 returns the created task ==
+  PASS  GET /tasks/9 returns 200  ->  200
+  PASS  the body contains the original title
+
+== 6. PATCH /tasks/9 updates only the sent field ==
+  PASS  PATCH /tasks/9 returns 200  ->  200
+  PASS  done changed to true
+  PASS  the title is preserved (PATCH is partial)
+
+== 7. DELETE /tasks/9 deletes the task ==
+  PASS  DELETE /tasks/9 returns 200 or 204  ->  200
+
+== 8. GET /tasks/9 returns 404 after deletion ==
+  PASS  GET /tasks/9 returns 404  ->  404
+
+== 9. GET /tasks/999 (nonexistent) returns 404 ==
+  PASS  GET /tasks/999 returns 404  ->  404
+
+== Summary ==
+SUMMARY: PASS=15 FAIL=0
+All good! HTTP verbs are being used correctly.
