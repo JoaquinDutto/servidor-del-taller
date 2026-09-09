@@ -45,6 +45,7 @@ def parse_json_body(environ):
 
 
 def application(environ, start_response):
+    global next_task_id
     method = environ.get("REQUEST_METHOD", "GET")
     path = environ.get("PATH_INFO", "/")
     path_parts = [part for part in path.split("/") if part]
